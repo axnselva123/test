@@ -1,0 +1,754 @@
+
+
+
+
+[System	:Formula	]
+	
+	KCIsalesopt	:@@issales
+
+
+
+[#Form	:salescolor	]
+;	
+	Add	:Option	:KMSsalescolor	:@@cmpmailname contains "ESTIMATE"
+	
+[!Form	:KMSsalescolor	]
+
+	Delete	:Print
+	Add	:Print	:Kumaran_and_co_invoice
+;	
+;	Add	:Button	:GScashGroupbutton
+	
+[Button	:GScashGroupbutton	]
+	
+	Title	:"Estimate Invoice Print"
+	Key	 : ctrl + P
+	Action:Call:GScashGroupbuttonfunction
+	
+[Function	:GScashGroupbuttonfunction	]
+	
+	01	:Print Report:Kumaran_and_co_invoice	;Kumaran_and_co_invoice
+	
+[ Report	: Kumaran_and_co_invoice	]
+	
+	Use			: printedinvoice
+	Delete		: Form	: printedinvoice
+;	Delete	:Form	:GST InvoiceWithItemAnalysis
+	Form		: Kumaran_and_co_invoice
+	Object		: voucher
+	
+[ Form		: Kumaran_and_co_invoice	]
+	
+	Height	:21 cm
+	Width	:15 cm
+	Space Top	:.5 cm
+	Space Right	:.5 cm
+	Space Left	:.5 cm
+	Space Bottom	:.5 cm
+	
+;	PrintAfterSave  : @@PrintAfterSave
+	
+	Part	:KCtop , KCmid 
+	Bottom Part	: KCbot
+;	Bottom Part	:KCbot
+	
+	Page Break	:KCtoppage , KCtop
+	
+[Part	:KCtoppage	]
+	
+	Line	:KCtoppage
+	
+[Line	:KCtoppage	]
+	
+	Right Field	:namefield
+	Border	:thintop
+	
+	Local	:Field	:namefield	:Set as	:"Continue..."
+	
+[Part	:KCtop	]
+	
+	Part	:/*KCtopgst , KCtopcmp ,*/ KCtoptit , KCtoptoinv , KCtopmidtit
+	Vertical	:Yes
+	
+[Part	:KCtopgst	]
+	
+	Line	:KCtopgst
+	
+[Line	:KCtopgst	]
+	
+	Field	:KCtopgst
+	Right Field	:copyfield
+	
+[Field	:KCtopgst	]
+	
+	Set as	:@@cmpgstaxnumber
+	Full Width	:Yes
+	Line	:0
+	Style	:KCs1
+	
+[Part	:KCtopcmp	]
+	
+	Line	:KCtopcmpname , KCtopcmpadd , KCtopcmpph 
+	Repeat	:KCtopcmpadd:KCcompanyaddress
+	
+[Collection: KCCompany Address]
+	
+    Type        : Address   : Company
+    Child of    : ##SVCurrentCompany
+	
+[Line	:KCtopcmpname	]
+	
+	Field	:KCtopcmpname
+	
+[Field	:KCtopcmpname	]
+	
+	Set as	:@@cmpmailname
+	Full Width	:Yes
+	Line	:0
+	Align	:Center
+	Style	:KCs1cmp
+	
+[Style	:KCs1cmp	]
+	
+	Use	:KCs1
+	Height	:15
+	
+[Line	:KCtopcmpadd	]
+	
+	Field	:KCtopcmpadd
+	
+[Field	:KCtopcmpadd	]
+	
+	Set as	:$address
+	Full Width	:Yes
+	Line	:0
+	Align	:Center
+	Style	:KCs2
+	
+[Line	:KCtopcmpph	]
+	
+	Use	:KCtopcmpadd
+		
+	Local	:Field	:KCtopcmpadd	:Set as	:"Cell : " + $MobileNumbers:company:##svcurrentcompany
+	
+[Part	:KCtoptit	]
+	
+	Line	:KCtoptit
+	
+;	Option	:KCtoptitsalesopt	:@@KCIsalesopt
+	
+[!Part	:KCtoptitsalesopt	]
+	
+	Add	:Line	:At End	:KCtoptitsubtit
+	
+
+[Line	:KCtoptitsubtit	]
+	
+	Field	:KCtoptitsubtit
+	
+[Field	:KCtoptitsubtit	]
+	
+	Set as	:if $partyledgername contains "cash" then "CASH BILL" else "CREDIT BILL"
+	Full Width	:Yes
+	Line	:0
+	Align	:Center
+	Style	:KCtoptitsubtits
+	
+[Style	:KCtoptitsubtits	]
+	
+	Use	:KCs1
+	Height	:13
+	
+[Line	:KCtoptit	]
+	
+	Field	:/*KCtoptitemt ,*/ KCtoptit
+;	Right Field	:KCtopdate
+	Space Top	:.2 cm
+	Space Bottom	:.2 cm
+	
+[Field	:KCtoptitemt	]
+	
+	Set as	:""
+	Width	:3 cm
+	
+[Field	:KCtopdate	]
+	
+	Set as	:"DATE : " + $$String:$date:"shortdate"
+	Width	:3 cm
+	Align	:Right
+	
+[Field	:KCtoptit	]
+	
+	Set as	:"ESTIMATE"
+	Full Width	:Yes
+	Line	:0
+	Align	:Center
+	Style	:KCs1cmp
+	
+[Part	:KCtoptoinv	]
+	
+	Part	:KCtopto
+	Right Part	:KCtopinv
+	
+[Part	:KCtopto	]
+	
+	Line	:KCtoptoname , KCtoptoadd  , KCtoptoph
+	Repeat	:KCtoptoadd:address
+
+[Line	:KCtoptoname	]
+	
+	Field	:KCtoptonametit , KCtoptoname
+	
+[Field	:KCtoptonametit	]
+	
+	Set as	:"To :"
+	Width	:1.3 cm
+	Style	:KCs2
+	
+[Field	:KCtoptoname	]
+	
+	Set as	:$partyledgername
+	Full Width	:Yes
+	Line	:0
+	Style	:KCs1
+	
+[Line	:KCtoptoadd	]
+	
+	Field	:KCtoptoadd
+	
+[Field	:KCtoptoadd	]
+	
+	Set as	:$Address
+	Full Width	:Yes
+	Line	:0
+	Space Left	:1.3 cm
+	Style	:KCs2
+	
+[Line	:KCtoptogstin	]
+	
+	Use	:KCtoptoadd
+	Invisible	:@@cmpmailname not contains "Shri" or $$IsEmpty:$PartyGSTIN
+	
+	Local	:Field	:KCtoptoadd	:Set as	:"GSTIN : " + $PartyGSTIN
+	
+[Line	:KCtoptoph	]
+	
+	Use	:KCtoptoadd
+	Invisible	:$$IsEmpty:$LedgerMobile:ledger:$partyledgername
+	
+	Local	:Field	:KCtoptoadd	:Set as	:"Ph : " + $LedgerMobile:ledger:$partyledgername
+	
+[Part	:KCtopinv	]
+	
+	Line	: KCtopinvno , KCtopinvdate, KCtopinvvehileno , KCtopinvtime
+	Width	:7 cm
+;	Border	:thinbox
+	
+[!Part	:KCtopinvtermsopt	]
+	
+	Delete	:Line	:KCtopinvpayterms
+	
+[Line	:KCtopinvpayterms	]
+	
+	Field	:shortprompt , KCtopinvpayterms
+;	Space Top	:.1 cm
+	
+	Local	:Field	:shortprompt	:Set as	:"Pymt Terms:"
+	Local	:Field	:shortprompt	:Style	:KCs2
+	Local	:Field	:shortprompt	:Width	:@@shortwidth + 5
+	
+[Field	:KCtopinvpayterms	]
+	
+	Set as	:$BasicDueDateOfPymt
+	Full Width	:Yes
+	Line	:0
+	Style	:KCs1
+	
+[Line	:KCtopinvno	]
+	
+	Use	:KCtopinvpayterms
+	
+	Local	:Field	:shortprompt	:Set as	:"Bill No:"
+	Local	:Field	:KCtopinvpayterms	:Set as	:$vouchernumber
+	
+[Line	:KCtopinvdate	]
+	
+	Use	:KCtopinvpayterms
+	
+	Local	:Field	:shortprompt	:Set as	:"Date:"
+	Local	:Field	:KCtopinvpayterms	:Set as	:$$String:$date:"shortdate"
+	
+[Line	:KCtopinvvehileno	]
+	
+	Use	:KCtopinvpayterms
+	
+	Local	:Field	:shortprompt	:Set as	:"Vehicle No:"
+	Local	:Field	:KCtopinvpayterms	:Set as	:$Reference
+	
+[Line	:KCtopinvtime	]
+	
+	use	:KCtopinvpayterms
+	
+	Local	:Field	:shortprompt	:Set as	:"Time:"
+	Local	:Field	:KCtopinvpayterms	:Set as	:@@MachineTimeFormula
+	
+[Part	:KCtopmidtit	]
+	
+	Line	:KCtopmidtit	
+	Border	:thintopbottom
+	
+[Line	:KCtopmidtit	]
+	
+	
+	Field	:KCmidsno , KCmiditem
+	Right Field	:/*KCmidhsn ,*/KCmidnos ,  KCmidqty , KCmidrate ,KCmidemt ,  KCmidamt ;, KCmidgst , KCmidgstamt , KCmidtotamt
+	Space Top	:.1 cm
+	Space Bottom	:.1 cm
+	
+	Option	:KCmiddcopt	:@@KCIDeliverynoteopt
+	
+	Local	:Field	:default	:Style	:KCs1
+	Local	:Field	:default	:Style	:normalbold
+	Local	:Field	:default	:Type	:String
+	Local	:Field	:KCmidsno	:Set as	:"S.No"
+	Local	:Field	:KCmiditem	:Set as	:"Description"
+	Local	:Field	:KCmidhsn	:Set as	:"HSN Code"
+	Local	:Field	:KCmidnos	:Set as	:"Nos"
+	Local	:Field	:KCmidqty	:Set as	:"Qty"
+	Local	:Field	:KCmidrate	:Set as	:"Rate"
+	Local	:Field	:KCmidamt	:Set as	:"Amount"
+	Local	:Field	:KCmidgst	:Set as	:"GST %"
+	Local	:Field	:KCmidgstamt	:Set as	:"GST Amt"
+	Local	:Field	:KCmidtotamt	:Set as	:"Total Amt"
+	
+	
+[Part	:KCmid	]
+	
+;	Part	:KCmiddet , KCmidled
+;	Vertical	:Yes
+;	Scroll	:Vertical
+;	Common Border	:Yes
+;	Float	:No
+;	
+;[Part	:KCmiddet	]
+	
+	Line	:KCmid
+	Repeat	:KCmid:inventoryentries
+	Scroll	:Vertical
+	Common Border	:Yes
+	Float	:No
+	
+	Total	:KCmidqty
+	
+[Line	:KCmid	]
+	
+	Field	:KCmidsno , KCmiditem
+	Right Field	:/*KCmidhsn ,*/KCmidnos ,  KCmidqty , KCmidrate ,KCmidemt ,  KCmidamt ;, KCmidgst , KCmidgstamt , KCmidtotamt
+	
+	Local	:Field	:default	:Style	:KCs1	;KCs2
+	
+;	Option	:KCmiddcopt	:@@KCIDeliverynoteopt
+	
+;	Explode	:KCmidexpl		
+	
+[!Line	:KCmiddcopt	]
+		
+	Delete	:Right Field	:KCmidhsn , KCmidrate , KCmidamt , KCmidgst , KCmidgstamt , KCmidtotamt
+	
+[Part	:KCmidexpl	]
+	
+	Line	:KCmidexpl
+	Repeat	:KCmidexpl:basicuserdescription
+	
+[Line	:KCmidexpl	]
+	
+	Field	:KCmidsno , KCmiditem
+	Right Field	:KCmidhsn , KCmidqty , KCmidrate , KCmidamt , KCmidgst , KCmidgstamt , KCmidtotamt
+	
+	Local	:Field	:KCmidsno	:Set as	:""
+	Local	:Field	:KCmiditem	:Set as	:$basicuserdescription
+	Local	:Field	:KCmiditem	:Space Left	:.5 cm
+	Local	:Field	:KCmidhsn	:Set as	:""
+	Local	:Field	:KCmidqty	:Set as	:""
+	Local	:Field	:KCmidrate	:Set as	:""
+	Local	:Field	:KCmidamt	:Set as	:""
+	Local	:Field	:KCmidgst	:Set as	:""
+	Local	:Field	:KCmidgstamt	:Set as	:""
+	Local	:Field	:KCmidtotamt	:Set as	:""
+	
+	
+[Field	:KCmidsno	]
+	
+	Set as	:$$Line
+	Width	:1 cm
+	Align	:Center
+
+[Field	:KCmiditem	]
+	
+	Set as	:$stockitemname
+	Full Width	:Yes
+	Line	:0
+	
+[Field	:KCmidhsn	]
+	
+	Set as	:$gstitemhsncodeex
+	Width	:2 cm
+	
+[Field	:KCmidnos	]
+	
+	Use	:numberfield
+	Set as	:$KMSudfNossto
+	Width	:2 cm
+	Align	:Right
+	Format	:"no zero"
+	Invisible	:Yes
+	
+[Field	:KCmidqty	]
+	
+	Use	:qtyfield
+	Set as	:$billedqty
+	Width	:3 cm
+	
+[Field	:KCmidrate	]
+	
+	Use	:ratepricefield
+	Set as	:$rate
+	Width	:2.8 cm
+	
+[Field	:KCmidemt	]
+	
+	Set as	:""
+	Width	:.5 cm
+	
+[Field	:KCmidamt	]
+	
+	Use	:amountfield
+	Set as	:$amount
+	Width	:3.2 cm
+	
+[Field	:KCmidgst	]
+	
+	Use	:numberfield
+	Set as	:If NOT $GSTIsTransLedEx Then "" Else $GSTClsfnIGSTRateEx
+	Width	:1.5 cm
+	Align	:Center
+	Format	:"no zero , percentage"
+	
+[Field	:KCmidgstamt	]
+	
+	Use	:amountfield
+	Set as	:($amount * @@KCgstper)/100
+	Width	:2 cm
+	
+[System	:Formula	]
+	
+	KCgstper	:If NOT $GSTIsTransLedEx Then "" Else $GSTClsfnIGSTRateEx
+	
+[Field	:KCmidtotamt	]
+	
+	Use	:amountfield
+	Set as	    : If $$IsEmpty:@taxableamt Then $$InitValue:"Amount" Else (If ##GSTFirstTransNatureType NOT IN (2, 3) Then If ##vIsDebit Then $$AsDrAmt:@localtaxamount Else $$AsCrAmt:@localtaxamount +
+                    Else If ##vIsDebit Then $$AsDrAmt:@intstatetaxamount Else $$AsCrAmt:@intstatetaxamount)
+
+    intstatetaxamount : $$NettAmount:@taxableamt:$$NettAmount:@igsttaxamt:$$NettAmount:@cessgsttaxamt
+    localtaxamount    : $$NettAmount:@taxableamt:$$NettAmount:@cgsttaxamt:$$NettAmount:@sgsttaxamt:$$NettAmount:@cessgsttaxamt:@statecesstaxamt
+                      
+    taxableamt        : $$ReportObject:$$CollectionFieldByKey:$GSTInvoice_GSTAssesableValue:@@GSTTaxAnalysisItemLedKey:GSTTaxAnalysiAlongWithSummary
+                      
+    cgsttaxamt        : $$ReportObject:$$CollectionFieldByKey:$GSTItemTaxCGSTTaxAmt:@@GSTTaxAnalysisItemLedKey:GSTTaxAnalysiAlongWithSummary
+    sgsttaxamt        : $$ReportObject:$$CollectionFieldByKey:$GSTItemTaxSGSTTaxAmt:@@GSTTaxAnalysisItemLedKey:GSTTaxAnalysiAlongWithSummary
+    igsttaxamt        : $$ReportObject:$$CollectionFieldByKey:$GSTItemTaxIGSTTaxAmt:@@GSTTaxAnalysisItemLedKey:GSTTaxAnalysiAlongWithSummary
+    cessgsttaxamt     : $$ReportObject:$$CollectionFieldByKey:$GSTItemTaxCessGSTTaxAmt:@@GSTTaxAnalysisItemLedKey:GSTTaxAnalysiAlongWithSummary
+    statecesstaxamt  : $$ReportObject:$$CollectionFieldByKey:$GSTItemTaxStateCessAmt:@@GSTTaxAnalysisItemLedKey:GSTTaxAnalysiAlongWithSummary
+    
+	Width	:2.5 cm
+	
+
+[Part	:KCmidledanys	]
+	
+;	Part	:VCH GST AnalysisDetails 
+	Right Part	:KCmidled
+	
+[Part	:KCmidled	]
+	
+	Line	:KCmidledsubtot , KCmidled
+	Repeat	:KCmidled:ledgerentries
+	Width	:7 cm
+	
+[Line	:KCmidledsubtot	]
+	
+	Field	:KCmidledsubtot
+	Right Field	:KCmidledsubtotamt
+	Space Top	:.5 cm
+	
+[Field	:KCmidledsubtot	]
+	
+	Set as	:"Sub Total"
+	Full Width	:Yes
+	Line	:0
+	Align	:Right
+	Style	:KCs1
+	
+[Field	:KCmidledsubtotamt	]
+	
+	Use	:amountfield
+	Set as	:$$CollAmtTotal:inventoryentries:$amount
+	Width	:2.5 cm
+	Style	:KCs1
+	
+[Line	:KCmidled	]
+	
+	Field	:KCmidledsubtot
+	Right Field	:KCmidledsubtotamt
+	
+	Empty	:$ledgername = $partyledgername
+;	Remove if	:$ledgername contains "CGST" or $ledgername contains "SGST" or $ledgername contains "IGST"
+	
+	Local	:Field	:default	:Style	:KCs2
+	Local	:Field	:KCmidledsubtot	:Set as	:$ledgername
+	Local	:Field	:KCmidledsubtotamt	:Set as	:$amount
+	
+[Part	:KCbot	]
+	
+	Part	:KCmidledanys , KCbottot , KCbotamoword ;, KCbotsign ;, KCbotdeclaration
+	Vertical	:Yes
+	
+	Option	:KCbotDCopt	:@@KCIDeliverynoteopt
+	
+[!Part	:KCbotDCopt	]
+	
+	Delete	:Part	:KCmidledanys
+	
+[Part	:KCbottot	]
+	
+	Line	:KCbottot
+	
+[Line	:KCbottot	]
+	
+	Field	:KCmidsno , KCmiditem
+	Right Field	:KCmidhsn , KCmidqty , KCbottotnetamt , KCmidtotamt
+	Border	:thintopbottom
+	Space Top	:.1 cm
+	Space Bottom	:.1 cm
+	
+	Option	:KCbottotdcopt		:@@KCIDeliverynoteopt
+	
+	Local	:Field	:default	:Style	:KCs1
+	Local	:Field	:KCmidsno	:Set as	:"E.&O.E"
+	Local	:Field	:KCmidsno	:Width	:2.5 cm
+	Local	:Field	:KCmiditem	:Set as	:""
+	Local	:Field	:KCmidhsn	:Set as	:"Tot Qty"
+	Local	:Field	:KCmidhsn	:Width	:3 cm
+	Local	:Field	:KCmidhsn	:Align	:Right
+	Local	:Field	:KCmidqty	:Set as	:$$Total:KCmidqty
+	Local	:Field	:KCmidtotamt	:Set as	:$amount
+	
+[!Line	:KCbottotdcopt	]
+	
+	Delete	:Right Field	:KCmidhsn, KCbottotnetamt , KCmidtotamt
+	
+	
+	
+[Field	:KCbottotnetamt	]
+	
+	Set as	:"NET AMOUNT"
+	Width	:7.5 cm
+	Align	:Right
+	
+[Part	:KCbotamoword	]
+	
+	Line	:KCbotamoword
+	
+[Line	:KCbotamoword	]
+	
+	Field	:KCbotamoword
+	Space Top	:.1 cm
+	Space Bottom	:.1 cm
+	
+[Field	:KCbotamoword]
+	
+	Set as	:"Amount in Words : " + $$InWords:$amount:"no symbol" + " only"
+	Full Width	:Yes
+	Line	:0
+	Style	:KCs2
+	
+[Part	:KCbotsign	]
+	
+	Line	:KCbotsign
+	
+[Line	:KCbotsign	]
+	
+;	Field	:KCbotsigncheck , KCbotsigndespatchedby , KCbotsigncustomer
+	Right Field	:KCbotsignfor
+	Space Top	:1 cm
+	
+	Local	:Field	:KCbotsigncheck	:Align	:Left
+	
+[Field	:KCbotsigncheck	]
+	
+	Set as	:"Checked by"
+	Full Width	:Yes
+	Line	:0
+	Align	:Center
+	Style	:KCs2
+	
+[Field	:KCbotsigndespatchedby	]
+	
+	Use	:KCbotsigncheck
+	Set as	:"Despatched by"
+	
+[Field	:KCbotsigncustomer	]
+	
+	Use	:KCbotsigncheck
+	Set as	:"Receiver Signature"
+	
+[Field	:KCbotsignfor	]
+	
+	Use	:KCbotsigncheck
+	Set as	:"For " + @@cmpmailname
+	Align	:Right
+	
+[Part	:KCbotdeclaration	]
+	
+	Line	:KCbotdeclaration
+	Space Top	:.2 cm
+	
+[Line	:KCbotdeclaration	]
+	
+	Field	:KCbotdeclaration
+	
+[Field	:KCbotdeclaration	]
+	
+	Set as	:$VCHPrintDecl:VoucherType:##SVVoucherType
+	Full Width	:Yes
+	Line	:0
+	
+
+;;;;;;;;;;;;;;;;;;;      udf   ;;;;;;;;;
+
+[#Line: EI ColumnOne]
+	
+;	Add	:Option	:KMSColumnOneES	:@@issales
+	
+[!Line	:KMSColumnOneES	]
+	 
+	Add	: Right Field	: At Beginning	:KMSudfNostit
+	;Local: Field: vchqtytitle : Info: "Colours"
+	
+[Field	:KMSudfNostit	]
+	
+	Info	:"Nos"
+	Width	:7% page
+	Align	:Center
+	Style	:normalbold
+	
+[#Line: EI InvInfo]
+	
+;	Add	:Option	:KMSEIInvInfoESinv	:@@issales
+	
+[!Line	:KMSEIInvInfoESinv	]
+	 
+	Add	: Right Field	: At Beginning	:KMSudfNos
+	
+ [#Line: CI InvInfo]
+	 
+;	Add	:Option	:KMSEIInvInfoESinv	:@@issales
+	
+[Field	:KMSudfNos	]
+	
+	Use	:numberfield
+	Storage	:KMSudfNossto
+	Set Always	:Yes
+	Width	:7% page
+	Format	:"no zero"
+	
+[#Line: EXPinvColumn1]
+	
+;	Add	:Option	:KMSEXPinvColumn1	:@@issales
+	
+[!Line	:KMSEXPinvColumn1	]
+	
+	Add	:Right Field	:Before	:EXPINV QtyTitle	:KMSinvNostit
+	
+[Field	:KMSinvNostit	]
+	
+	Set as	:"Roll Number"
+	Width	:1.5 cm
+	Align	:Center
+	Border	:thinleft
+	
+	
+	
+[#Line: EXPinvColumn2]
+	
+;	Add	:Option	:KMSEXPinvColumn2	:@@issales
+	
+[!Line	:KMSEXPinvColumn2	]
+	
+	Add	:Right Field	:Before	:EXPINV ActualQtyTitle	:KMSinvNostit
+	
+	Local	:Field	:KMSinvNostit	:Set as	:""
+	
+[#Line: EXPinv InvDetails]
+	
+;	Add	:Option	:KMSEInvDetailsumn2	:@@issales
+	
+[!Line	:KMSEInvDetailsumn2	]
+	
+	Add		:Right Field	:Before	:EXPINV ActualQty	:KMSinvNos
+	
+[Field	:KMSinvNos	]
+		
+	Use	:numberfield
+	Set as	:$KMSudfNossto
+	Width	:1.5 cm
+	Align	:Right
+	Border	:thinleft
+	
+	
+[#Line: EXPinv AccDetails]
+	
+;	Add	:Option	:KMSEIAccDetailssumn2	:@@issales
+	
+[!Line	:KMSEIAccDetailssumn2	]
+	
+	Add	:Right Field	:Before	:EXPINV AccActualQty	:KMSinvNostit
+	
+	Local	:Field	:KMSinvNostit	:Set as	:""
+	
+[#Line: EXPinv totals]
+	
+;	Add	:Option	:KMSEItotalslssumn2	:@@issales
+	
+[!Line	:KMSEItotalslssumn2	]
+	
+	Add	:Right Field	:Before	:EXPINV ActualQtyTotal	:KMSinvNostit
+	
+	Local	:Field	:KMSinvNostit	:Set as	:""
+
+	
+	
+	
+
+
+
+	
+[Style	:KCs1	]
+	
+	Font	:"Courier New"
+	Height	:11
+	Bold	:Yes
+	
+[Style	:KCs2	]
+	
+	Use	:KCs1
+	Bold	:No
+	
+[System	:UDF	]
+	
+	KMSudfNossto	:Number	:1000
+	
+
+
+
+
